@@ -5,17 +5,55 @@ encoded = """
    [6::GZ_7_VS::ok] | [99::IGNORE_ME::bad] | %%noise%%
 """
 
-###############################################################
-"""
-1. Part of the real message is inside the the '[' and ']' brackets.
-2. Each fragment inside the brackets has a number, jumbled text of the message, and 'ok'. Focus on only those fragments. The '::' are just separating these parts in the fragment 
-3. To find the actual message in every fragment,take every letter in the jumbled message, and shift it backward by the number part in that fragment
-For example, if the number is 3 and the jumbled message is ABC, then the actual message is XYZ.
-Similarly, if the number is 5 and the jumbled message is ABC, then the actual message is VWX.
-4. Ignore any fragment that has 'bad' instead of 'ok'.
-5. Once you have decoded all the fragments, combine them in the order of their numbers to get the final message. First comes the fragment with number 1, then 2, and so on.
-"""
-
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+encoded = encoded.replace("\n", "").replace("   ", " ").strip()
+parts = encoded.split(" | ")
 
+fragment_1 = ""
+fragment_2 = ""
+fragment_3 = ""
+fragment_4 = ""
+fragment_5 = ""
+fragment_6 = ""
+fragment_7 = ""
+
+for part in parts:
+    if part.startswith("[") and part.endswith("]"):
+        inside = part[1:-1]
+        segments = inside.split("::")
+        number_str = segments[0]
+        jumbled = segments[1]
+        status = segments[2]
+
+        if status == "ok":
+            number = int(number_str)
+            decoded = ""
+
+            for char in jumbled:
+                if char in alphabet:
+                    pos = alphabet.find(char)
+                    new_pos = pos - number
+                    if new_pos < 0:
+                        new_pos = new_pos + 26
+                    decoded = decoded + alphabet[new_pos]
+                else:
+                    decoded = decoded + char
+
+            if number_str == "1":
+                fragment_1 = decoded
+            elif number_str == "2":
+                fragment_2 = decoded
+            elif number_str == "3":
+                fragment_3 = decoded
+            elif number_str == "4":
+                fragment_4 = decoded
+            elif number_str == "5":
+                fragment_5 = decoded
+            elif number_str == "6":
+                fragment_6 = decoded
+            elif number_str == "7":
+                fragment_7 = decoded
+
+final_message = fragment_1 + " " + fragment_2 + " " + fragment_3 + " " + fragment_4 + " " + fragment_5 + " " + fragment_6 + " " + fragment_7
+print(final_message)
